@@ -23,3 +23,6 @@ vendor/
 
 # mac
 .DS_Store
+
+# live go
+tmp/
