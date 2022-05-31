@@ -4,12 +4,16 @@ import (
 	"log"
 	"os"
 
+	"github.com/amirhnajafiz/planner/internal/handler"
 	"github.com/gofiber/fiber/v2"
 )
 
 func New() {
 	// creating a new fiber
 	app := fiber.New()
+
+	// registering our application by defining the handlers
+	handler.Register(app)
 
 	// getting the port from env variables
 	port := os.Getenv("port")
