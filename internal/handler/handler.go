@@ -1,27 +1,35 @@
 package handler
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"database/sql"
 
-func Register(app *fiber.App) {
+	"github.com/gofiber/fiber/v2"
+)
+
+type Handler struct {
+	Db *sql.DB
+}
+
+func (h Handler) Register(app *fiber.App) {
 	// creating our endpoints
-	app.Get("/", index)               // home
-	app.Post("/", postHandler)        // post handler
-	app.Put("/update", putHandler)    // update post handler
-	app.Delete("/delete", delHandler) // delete post handler
+	app.Get("/", h.index)               // home
+	app.Post("/", h.postHandler)        // post handler
+	app.Put("/update", h.putHandler)    // update post handler
+	app.Delete("/delete", h.delHandler) // delete post handler
 }
 
-func index(c *fiber.Ctx) error {
+func (h Handler) index(c *fiber.Ctx) error {
 	return c.SendString("hello world")
 }
 
-func postHandler(c *fiber.Ctx) error {
+func (h Handler) postHandler(c *fiber.Ctx) error {
 	return c.SendString("hello world")
 }
 
-func putHandler(c *fiber.Ctx) error {
+func (h Handler) putHandler(c *fiber.Ctx) error {
 	return c.SendString("hello world")
 }
 
-func delHandler(c *fiber.Ctx) error {
+func (h Handler) delHandler(c *fiber.Ctx) error {
 	return c.SendString("hello world")
 }
