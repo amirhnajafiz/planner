@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"github.com/amirhnajafiz/planner/internal/cmd"
 )
 
 func main() {
-	fmt.Println("go vim")
+	cmd.Execute()
 }
