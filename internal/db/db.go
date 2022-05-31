@@ -3,6 +3,8 @@ package db
 import (
 	"database/sql"
 	"strings"
+
+	_ "github.com/lib/pq"
 )
 
 const (
