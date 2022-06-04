@@ -2,6 +2,7 @@ package handler
 
 import (
 	"database/sql"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -19,7 +20,28 @@ func (h Handler) Register(app *fiber.App) {
 }
 
 func (h Handler) index(c *fiber.Ctx) error {
-	return c.SendString("hello world")
+	var (
+		res   string
+		todos []string
+	)
+
+	rows, err := h.Db.Query("SELECT * FROM todos")
+	defer rows.Close()
+
+	if err != nil {
+		log.Fatal(err)
+
+		c.SendString("[Failed] Error in DB")
+	}
+
+	for rows.Next() {
+		rows.Scan(&res)
+		todos = append(todos, res)
+	}
+
+	return c.Render("index", fiber.Map{
+		"Todos": todos,
+	})
 }
 
 func (h Handler) postHandler(c *fiber.Ctx) error {
