@@ -21,21 +21,30 @@ func (h Handler) Register(app *fiber.App) {
 
 func (h Handler) index(c *fiber.Ctx) error {
 	var (
+		// query extracting variables
 		res   string
 		todos []string
+		// index query
+		query = "SELECT * FROM todos"
 	)
 
-	rows, err := h.Db.Query("SELECT * FROM todos")
-	defer rows.Close()
+	// executing our query
+	rows, err := h.Db.Query(query)
+
+	defer func(rows *sql.Rows) {
+		_ = rows.Close()
+	}(rows)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 
-		c.SendString("[Failed] Error in DB")
+		_ = c.SendString("[Failed] Error in DB")
 	}
 
+	// extracting our query results
 	for rows.Next() {
-		rows.Scan(&res)
+		_ = rows.Scan(&res)
+
 		todos = append(todos, res)
 	}
 
