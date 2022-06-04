@@ -33,6 +33,9 @@ func New() {
 		port = "8080" // default port is 8080
 	}
 
+	// adding assets files
+	app.Static("/", "./public")
+
 	// starting our server
 	log.Fatalln(app.Listen(":" + port))
 }
