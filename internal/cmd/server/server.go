@@ -11,7 +11,7 @@ import (
 
 func New() {
 	// creating a new fiber
-	app := fiber.New()
+	app := fiber.New(getConfigs())
 
 	// creating a new database connection
 	d, err := db.NewConnection()
