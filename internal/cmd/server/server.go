@@ -1,7 +1,6 @@
 package server
 
 import (
-	"log"
 	"os"
 
 	"github.com/amirhnajafiz/planner/internal/db"
@@ -17,13 +16,13 @@ func New(l *zap.Logger) {
 	// creating a new database connection
 	d, err := db.NewConnection()
 	if err != nil {
-		panic(any(err))
+		l.Fatal("database error", zap.Error(err))
 	}
 
 	// defining a new handler
 	h := handler.Handler{
 		Db:     d,
-		Logger: l,
+		Logger: l.Named("handler"),
 	}
 
 	// registering our application
@@ -39,5 +38,5 @@ func New(l *zap.Logger) {
 	app.Static("/", "./public")
 
 	// starting our server
-	log.Fatalln(app.Listen(":" + port))
+	l.Error(app.Listen(":" + port).Error())
 }

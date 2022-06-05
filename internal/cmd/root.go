@@ -8,5 +8,5 @@ import (
 func Execute() {
 	l := logger.New()
 
-	server.New(l)
+	server.New(l.Named("server"))
 }
