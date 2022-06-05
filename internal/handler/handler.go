@@ -78,18 +78,20 @@ func (h Handler) postHandler(c *fiber.Ctx) error {
 }
 
 func (h Handler) putHandler(c *fiber.Ctx) error {
+	query := "UPDATE todos SET item=$1 WHERE item=$s"
 	oldItem := c.Query("olditem")
 	newItem := c.Query("newitem")
 
-	_, _ = h.Db.Exec("UPDATE todos SET item=$1 WHERE item=$s", newItem, oldItem)
+	_, _ = h.Db.Exec(query, newItem, oldItem)
 
 	return c.Redirect("/")
 }
 
 func (h Handler) delHandler(c *fiber.Ctx) error {
+	query := "DELETE form todos WHERE item=$1"
 	todoToDelete := c.Query("item")
 
-	_, _ = h.Db.Exec("DELETE form todos WHERE item=$1", todoToDelete)
+	_, _ = h.Db.Exec(query, todoToDelete)
 
 	return c.SendString("deleted")
 }
