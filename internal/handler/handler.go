@@ -54,7 +54,25 @@ func (h Handler) index(c *fiber.Ctx) error {
 }
 
 func (h Handler) postHandler(c *fiber.Ctx) error {
-	return c.SendString("hello world")
+	type todo struct {
+		Item string
+	}
+
+	newTodo := todo{}
+	if err := c.BodyParser(&newTodo); err != nil {
+		log.Println(err)
+
+		return c.SendString(err.Error())
+	}
+
+	if newTodo.Item != "" {
+		_, err := h.Db.Exec("INSERT into todos VALUES ($1)", newTodo.Item)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	return c.Redirect("/")
 }
 
 func (h Handler) putHandler(c *fiber.Ctx) error {
