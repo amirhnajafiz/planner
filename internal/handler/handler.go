@@ -78,7 +78,12 @@ func (h Handler) postHandler(c *fiber.Ctx) error {
 }
 
 func (h Handler) putHandler(c *fiber.Ctx) error {
-	return c.SendString("hello world")
+	oldItem := c.Query("olditem")
+	newItem := c.Query("newitem")
+
+	_, _ = h.Db.Exec("UPDATE todos SET item=$1 WHERE item=$s", newItem, oldItem)
+
+	return c.Redirect("/")
 }
 
 func (h Handler) delHandler(c *fiber.Ctx) error {
