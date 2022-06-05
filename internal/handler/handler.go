@@ -54,19 +54,23 @@ func (h Handler) index(c *fiber.Ctx) error {
 }
 
 func (h Handler) postHandler(c *fiber.Ctx) error {
+	// type fo request
 	type todo struct {
-		Item string
+		Item string `json:"item"`
 	}
 
+	// our query and new item
 	query := "INSERT into todos VALUES ($1)"
 	newTodo := todo{}
 
+	// parsing the body
 	if err := c.BodyParser(&newTodo); err != nil {
 		log.Println(err)
 
 		return c.SendString(err.Error())
 	}
 
+	// save the new item
 	if newTodo.Item != "" {
 		_, err := h.Db.Exec(query, newTodo.Item)
 		if err != nil {
@@ -78,19 +82,24 @@ func (h Handler) postHandler(c *fiber.Ctx) error {
 }
 
 func (h Handler) putHandler(c *fiber.Ctx) error {
+	// query
 	query := "UPDATE todos SET item=$1 WHERE item=$s"
+	// items
 	oldItem := c.Query("olditem")
 	newItem := c.Query("newitem")
 
+	// update database
 	_, _ = h.Db.Exec(query, newItem, oldItem)
 
 	return c.Redirect("/")
 }
 
 func (h Handler) delHandler(c *fiber.Ctx) error {
+	// query and item
 	query := "DELETE form todos WHERE item=$1"
 	todoToDelete := c.Query("item")
 
+	// remove from database
 	_, _ = h.Db.Exec(query, todoToDelete)
 
 	return c.SendString("deleted")
