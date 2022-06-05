@@ -87,5 +87,9 @@ func (h Handler) putHandler(c *fiber.Ctx) error {
 }
 
 func (h Handler) delHandler(c *fiber.Ctx) error {
-	return c.SendString("hello world")
+	todoToDelete := c.Query("item")
+
+	_, _ = h.Db.Exec("DELETE form todos WHERE item=$1", todoToDelete)
+
+	return c.SendString("deleted")
 }
