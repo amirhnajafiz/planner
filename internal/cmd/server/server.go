@@ -7,9 +7,10 @@ import (
 	"github.com/amirhnajafiz/planner/internal/db"
 	"github.com/amirhnajafiz/planner/internal/handler"
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 )
 
-func New() {
+func New(l *zap.Logger) {
 	// creating a new fiber
 	app := fiber.New(getConfigs())
 
@@ -21,7 +22,8 @@ func New() {
 
 	// defining a new handler
 	h := handler.Handler{
-		Db: d,
+		Db:     d,
+		Logger: l,
 	}
 
 	// registering our application

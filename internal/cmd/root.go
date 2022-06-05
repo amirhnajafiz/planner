@@ -1,7 +1,12 @@
 package cmd
 
-import "github.com/amirhnajafiz/planner/internal/cmd/server"
+import (
+	"github.com/amirhnajafiz/planner/internal/cmd/server"
+	"github.com/amirhnajafiz/planner/internal/logger"
+)
 
 func Execute() {
-	server.New()
+	l := logger.New()
+
+	server.New(l)
 }
