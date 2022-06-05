@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"os"
 	"strings"
 
 	_ "github.com/lib/pq"
@@ -30,8 +31,14 @@ var (
 
 func NewConnection() (*sql.DB, error) {
 	connectionStr := "postgresql://{{username}}:{{password}}@{{database_ip}}/{{table}}?sslmode=disable"
+
 	for key := range keys {
-		connectionStr = strings.Replace(connectionStr, key, keys[key], 1)
+		temp := os.Getenv(key)
+		if temp == "" {
+			temp = keys[key]
+		}
+
+		connectionStr = strings.Replace(connectionStr, key, temp, 1)
 	}
 
 	db, err := sql.Open(driverName, connectionStr)
