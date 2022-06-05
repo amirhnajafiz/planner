@@ -58,7 +58,9 @@ func (h Handler) postHandler(c *fiber.Ctx) error {
 		Item string
 	}
 
+	query := "INSERT into todos VALUES ($1)"
 	newTodo := todo{}
+
 	if err := c.BodyParser(&newTodo); err != nil {
 		log.Println(err)
 
@@ -66,7 +68,7 @@ func (h Handler) postHandler(c *fiber.Ctx) error {
 	}
 
 	if newTodo.Item != "" {
-		_, err := h.Db.Exec("INSERT into todos VALUES ($1)", newTodo.Item)
+		_, err := h.Db.Exec(query, newTodo.Item)
 		if err != nil {
 			log.Println(err)
 		}
