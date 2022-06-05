@@ -2,13 +2,14 @@ package handler
 
 import (
 	"database/sql"
-	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 )
 
 type Handler struct {
-	Db *sql.DB
+	Db     *sql.DB
+	Logger *zap.Logger
 }
 
 func (h Handler) Register(app *fiber.App) {
@@ -36,7 +37,7 @@ func (h Handler) index(c *fiber.Ctx) error {
 	}(rows)
 
 	if err != nil {
-		log.Print(err)
+		h.Logger.Error(err.Error())
 
 		_ = c.SendString("[Failed] Error in DB")
 	}
@@ -65,7 +66,7 @@ func (h Handler) postHandler(c *fiber.Ctx) error {
 
 	// parsing the body
 	if err := c.BodyParser(&newTodo); err != nil {
-		log.Println(err)
+		h.Logger.Error(err.Error())
 
 		return c.SendString(err.Error())
 	}
@@ -74,7 +75,7 @@ func (h Handler) postHandler(c *fiber.Ctx) error {
 	if newTodo.Item != "" {
 		_, err := h.Db.Exec(query, newTodo.Item)
 		if err != nil {
-			log.Println(err)
+			h.Logger.Error(err.Error())
 		}
 	}
 
