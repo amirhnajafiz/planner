@@ -20,6 +20,9 @@ const (
 	username   = ""
 	password   = ""
 	databaseIP = ""
+
+	// schema file
+	psqlFilename = ""
 )
 
 var (
@@ -33,7 +36,7 @@ var (
 )
 
 func MakeMigrate() {
-	cmd := exec.Command("psql", "-U", psqlUser, "-h", psqlHost, "-d", psqlDBName, "-a", "-f", sqlFilePath)
+	cmd := exec.Command("psql", "-U", username, "-h", databaseIP, "-d", tableName, "-a", "-f", psqlFilename)
 
 	var out, stderr bytes.Buffer
 
@@ -46,7 +49,7 @@ func MakeMigrate() {
 	}
 }
 
-func NewConnection() (*sql.DB, error) {
+func getConnectionKey() string {
 	connectionStr := "postgresql://{{username}}:{{password}}@{{database_ip}}/{{table}}?sslmode=disable"
 
 	for key := range keys {
@@ -58,7 +61,11 @@ func NewConnection() (*sql.DB, error) {
 		connectionStr = strings.Replace(connectionStr, key, temp, 1)
 	}
 
-	db, err := sql.Open(driverName, connectionStr)
+	return connectionStr
+}
+
+func NewConnection() (*sql.DB, error) {
+	db, err := sql.Open(driverName, getConnectionKey())
 	if err != nil {
 		return nil, err
 	}
