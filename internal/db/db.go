@@ -1,11 +1,8 @@
 package db
 
 import (
-	"bytes"
 	"database/sql"
-	"log"
 	"os"
-	"os/exec"
 	"strings"
 
 	_ "github.com/lib/pq"
@@ -20,9 +17,6 @@ const (
 	username   = ""
 	password   = ""
 	databaseIP = ""
-
-	// schema file
-	psqlFilename = ""
 )
 
 var (
@@ -34,20 +28,6 @@ var (
 		"{{database_ip}}": databaseIP,
 	}
 )
-
-func MakeMigrate() {
-	cmd := exec.Command("psql", "-U", username, "-h", databaseIP, "-d", tableName, "-a", "-f", psqlFilename)
-
-	var out, stderr bytes.Buffer
-
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
-
-	err := cmd.Run()
-	if err != nil {
-		log.Fatalf("Error executing query. Command Output: %+v\n: %+v, %v", out.String(), stderr.String(), err)
-	}
-}
 
 func getConnectionKey() string {
 	connectionStr := "postgresql://{{username}}:{{password}}@{{database_ip}}/{{table}}?sslmode=disable"
