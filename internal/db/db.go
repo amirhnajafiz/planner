@@ -45,10 +45,5 @@ func getConnectionKey() string {
 }
 
 func NewConnection() (*sql.DB, error) {
-	db, err := sql.Open(driverName, getConnectionKey())
-	if err != nil {
-		return nil, err
-	}
-
-	return db, nil
+	return sql.Open(driverName, getConnectionKey())
 }
