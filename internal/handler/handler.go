@@ -37,7 +37,7 @@ func (h Handler) index(c *fiber.Ctx) error {
 	}(rows)
 
 	if err != nil {
-		h.Logger.Error(err.Error())
+		h.Logger.Error("database error", zap.Error(err))
 
 		_ = c.SendString("[Failed] Error in DB")
 	}
@@ -66,7 +66,7 @@ func (h Handler) postHandler(c *fiber.Ctx) error {
 
 	// parsing the body
 	if err := c.BodyParser(&newTodo); err != nil {
-		h.Logger.Error(err.Error())
+		h.Logger.Error("parsing sql response failed", zap.Error(err))
 
 		return c.SendString(err.Error())
 	}
@@ -75,7 +75,7 @@ func (h Handler) postHandler(c *fiber.Ctx) error {
 	if newTodo.Item != "" {
 		_, err := h.Db.Exec(query, newTodo.Item)
 		if err != nil {
-			h.Logger.Error(err.Error())
+			h.Logger.Error("save item failed", zap.Error(err))
 		}
 	}
 
@@ -90,7 +90,9 @@ func (h Handler) putHandler(c *fiber.Ctx) error {
 	newItem := c.Query("newitem")
 
 	// update database
-	_, _ = h.Db.Exec(query, newItem, oldItem)
+	if _, err := h.Db.Exec(query, newItem, oldItem); err != nil {
+		h.Logger.Error("database update failed", zap.Error(err))
+	}
 
 	return c.Redirect("/")
 }
@@ -101,7 +103,9 @@ func (h Handler) delHandler(c *fiber.Ctx) error {
 	todoToDelete := c.Query("item")
 
 	// remove from database
-	_, _ = h.Db.Exec(query, todoToDelete)
+	if _, err := h.Db.Exec(query, todoToDelete); err != nil {
+		h.Logger.Error("database remove failed", zap.Error(err))
+	}
 
 	return c.SendString("deleted")
 }
