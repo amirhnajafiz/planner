@@ -8,6 +8,8 @@ services:
       - POSTGRES_PASSWORD=password
     ports:
       - '5432:5432'
+    command:
+      - psql -U root -d planner -a -f ./schema.sql
     volumes:
       - db:/var/lib/postgresql/data
 volumes:
