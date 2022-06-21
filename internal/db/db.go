@@ -21,6 +21,9 @@ const (
 	// database connection
 	host = "localhost"
 	port = 5432
+
+	// database name
+	db = "planner"
 )
 
 var (
@@ -29,13 +32,14 @@ var (
 		"{{table}}":    tableName,
 		"{{user}}":     username,
 		"{{password}}": password,
+		"{{db}}":       db,
 		"{{host}}":     host,
 		"{{port}}":     strconv.Itoa(port),
 	}
 )
 
 func getConnectionKey() string {
-	connectionStr := "host={{host}} port={{port}} user={{user}} password={{password}} dbname={{table}} sslmode=disable"
+	connectionStr := "host={{host}} port={{port}} user={{user}} password={{password}} dbname={{db}} sslmode=disable"
 
 	for key := range keys {
 		temp := os.Getenv(key)
