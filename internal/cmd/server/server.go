@@ -1,28 +1,27 @@
 package server
 
 import (
+	"database/sql"
 	"os"
 
-	"github.com/amirhnajafiz/planner/internal/db"
 	"github.com/amirhnajafiz/planner/internal/handler"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 )
 
-func New(l *zap.Logger) {
+type Server struct {
+	Logger *zap.Logger
+	Db     *sql.DB
+}
+
+func (s Server) New() {
 	// creating a new fiber
 	app := fiber.New(getConfigs())
 
-	// creating a new database connection
-	d, err := db.NewConnection()
-	if err != nil {
-		l.Fatal("database error", zap.Error(err))
-	}
-
 	// defining a new handler
 	h := handler.Handler{
-		Db:     d,
-		Logger: l.Named("handler"),
+		Db:     s.Db,
+		Logger: s.Logger.Named("handler"),
 	}
 
 	// registering our application
@@ -38,5 +37,5 @@ func New(l *zap.Logger) {
 	app.Static("/", "./public")
 
 	// starting our server
-	l.Error(app.Listen(":" + port).Error())
+	s.Logger.Error(app.Listen(":" + port).Error())
 }
