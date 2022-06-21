@@ -34,8 +34,13 @@ func (s Server) New() {
 	}
 
 	// adding assets files
-	app.Static("/", "./public")
+	app.Static("/views", "./public")
+
+	// server start
+	s.Logger.Info("server started", zap.String("port", port))
 
 	// starting our server
-	s.Logger.Error(app.Listen(":" + port).Error())
+	if err := app.Listen(":" + port); err != nil {
+		s.Logger.Error("server failed", zap.Error(err))
+	}
 }
