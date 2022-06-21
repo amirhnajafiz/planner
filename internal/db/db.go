@@ -26,9 +26,9 @@ const (
 	db = "planner"
 )
 
-var (
-	// database config keys
-	keys = map[string]string{
+// database config keys
+func getKeys() map[string]string {
+	return map[string]string{
 		"{{table}}":    tableName,
 		"{{user}}":     username,
 		"{{password}}": password,
@@ -36,18 +36,19 @@ var (
 		"{{host}}":     host,
 		"{{port}}":     strconv.Itoa(port),
 	}
-)
+}
 
 func getConnectionKey() string {
 	connectionStr := "host={{host}} port={{port}} user={{user}} password={{password}} dbname={{db}} sslmode=disable"
+	keys := getKeys()
 
 	for key := range keys {
-		temp := os.Getenv(key)
-		if temp == "" {
-			temp = keys[key]
+		value := os.Getenv(key)
+		if value == "" {
+			value = keys[key]
 		}
 
-		connectionStr = strings.Replace(connectionStr, key, temp, 1)
+		connectionStr = strings.Replace(connectionStr, key, value, 1)
 	}
 
 	return connectionStr
