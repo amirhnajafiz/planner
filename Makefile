@@ -6,7 +6,3 @@ run-on-air:
 # make app
 build:
 	go build -o ./main
-
-# setup application
-set:
-	go run setup.go
