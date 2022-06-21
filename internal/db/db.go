@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"os"
+	"strconv"
 	"strings"
 
 	_ "github.com/lib/pq"
@@ -13,24 +14,28 @@ const (
 	driverName = "postgres"
 
 	// database variables
-	tableName  = "todos"
-	username   = ""
-	password   = ""
-	databaseIP = ""
+	tableName = "todos"
+	username  = "root"
+	password  = "password"
+
+	// database connection
+	host = "localhost"
+	port = 5432
 )
 
 var (
 	// database config keys
 	keys = map[string]string{
-		"{{table}}":       tableName,
-		"{{username}}":    username,
-		"{{password}}":    password,
-		"{{database_ip}}": databaseIP,
+		"{{table}}":    tableName,
+		"{{user}}":     username,
+		"{{password}}": password,
+		"{{host}}":     host,
+		"{{port}}":     strconv.Itoa(port),
 	}
 )
 
 func getConnectionKey() string {
-	connectionStr := "postgresql://{{username}}:{{password}}@{{database_ip}}/{{table}}?sslmode=disable"
+	connectionStr := "host={{host}} port={{port}} user={{user}} password={{password}} dbname={{table}} sslmode=disable"
 
 	for key := range keys {
 		temp := os.Getenv(key)
