@@ -2,25 +2,27 @@ package handler
 
 import (
 	"database/sql"
-
+	"errors"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 )
 
+// Handler for endpoints
 type Handler struct {
 	Db     *sql.DB
 	Logger *zap.Logger
 }
 
+// Register our handler endpoints routes
 func (h Handler) Register(app *fiber.App) {
 	// creating our endpoints
-	app.Get("/", h.index)               // home
+	app.Get("/", h.homePage)            // home
 	app.Post("/", h.postHandler)        // post handler
 	app.Put("/update", h.putHandler)    // update post handler
 	app.Delete("/delete", h.delHandler) // delete post handler
 }
 
-func (h Handler) index(c *fiber.Ctx) error {
+func (h Handler) homePage(c *fiber.Ctx) error {
 	var (
 		// query extracting variables
 		res   string
@@ -39,7 +41,7 @@ func (h Handler) index(c *fiber.Ctx) error {
 	if err != nil {
 		h.Logger.Error("database error", zap.Error(err))
 
-		_ = c.SendString("[Failed] Error in DB")
+		return errors.New("database error")
 	}
 
 	// extracting our query results
@@ -50,7 +52,7 @@ func (h Handler) index(c *fiber.Ctx) error {
 	}
 
 	return c.Render("index", fiber.Map{
-		"Todos": todos,
+		"items": todos,
 	})
 }
 
@@ -68,7 +70,7 @@ func (h Handler) postHandler(c *fiber.Ctx) error {
 	if err := c.BodyParser(&newTodo); err != nil {
 		h.Logger.Error("parsing sql response failed", zap.Error(err))
 
-		return c.SendString(err.Error())
+		return err
 	}
 
 	// save the new item
@@ -92,6 +94,8 @@ func (h Handler) putHandler(c *fiber.Ctx) error {
 	// update database
 	if _, err := h.Db.Exec(query, newItem, oldItem); err != nil {
 		h.Logger.Error("database update failed", zap.Error(err))
+
+		return err
 	}
 
 	return c.Redirect("/")
@@ -105,6 +109,8 @@ func (h Handler) delHandler(c *fiber.Ctx) error {
 	// remove from database
 	if _, err := h.Db.Exec(query, todoToDelete); err != nil {
 		h.Logger.Error("database remove failed", zap.Error(err))
+
+		return err
 	}
 
 	return c.SendString("deleted")
