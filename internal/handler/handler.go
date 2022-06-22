@@ -3,6 +3,8 @@ package handler
 import (
 	"database/sql"
 	"errors"
+
+	"github.com/amirhnajafiz/planner/internal/debug"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 )
@@ -39,9 +41,9 @@ func (h Handler) homePage(c *fiber.Ctx) error {
 	}(rows)
 
 	if err != nil {
-		h.Logger.Error("database error", zap.Error(err))
+		h.Logger.Error(debug.DatabaseError, zap.Error(err))
 
-		return errors.New("database error")
+		return errors.New(debug.DatabaseError)
 	}
 
 	// extracting our query results
@@ -68,7 +70,7 @@ func (h Handler) postHandler(c *fiber.Ctx) error {
 
 	// parsing the body
 	if err := c.BodyParser(&newTodo); err != nil {
-		h.Logger.Error("parsing sql response failed", zap.Error(err))
+		h.Logger.Error(debug.ParsingError, zap.Error(err))
 
 		return err
 	}
@@ -77,7 +79,7 @@ func (h Handler) postHandler(c *fiber.Ctx) error {
 	if newTodo.Item != "" {
 		_, err := h.Db.Exec(query, newTodo.Item)
 		if err != nil {
-			h.Logger.Error("save item failed", zap.Error(err))
+			h.Logger.Error(debug.SavingError, zap.Error(err))
 		}
 	}
 
@@ -93,7 +95,7 @@ func (h Handler) putHandler(c *fiber.Ctx) error {
 
 	// update database
 	if _, err := h.Db.Exec(query, newItem, oldItem); err != nil {
-		h.Logger.Error("database update failed", zap.Error(err))
+		h.Logger.Error(debug.UpdateError, zap.Error(err))
 
 		return err
 	}
@@ -108,7 +110,7 @@ func (h Handler) delHandler(c *fiber.Ctx) error {
 
 	// remove from database
 	if _, err := h.Db.Exec(query, todoToDelete); err != nil {
-		h.Logger.Error("database remove failed", zap.Error(err))
+		h.Logger.Error(debug.DeleteError, zap.Error(err))
 
 		return err
 	}
