@@ -1,0 +1,5 @@
+CREATE TABLE [IF NOT EXISTS] todos (
+    id SERIAL PRIMARY KEY,
+    item varchar(20) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+);
