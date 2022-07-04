@@ -3,6 +3,7 @@ package handler
 import (
 	"database/sql"
 	"errors"
+	"log"
 
 	"github.com/amirhnajafiz/planner/internal/debug"
 	"github.com/gofiber/fiber/v2"
@@ -30,7 +31,7 @@ func (h Handler) homePage(c *fiber.Ctx) error {
 		res   string
 		todos []string
 		// index query
-		query = "SELECT * FROM todos"
+		query = "SELECT item FROM todos"
 	)
 
 	// executing our query
@@ -53,6 +54,8 @@ func (h Handler) homePage(c *fiber.Ctx) error {
 		todos = append(todos, res)
 	}
 
+	log.Println(len(todos))
+
 	return c.Render("index", fiber.Map{
 		"items": todos,
 	})
@@ -65,7 +68,7 @@ func (h Handler) postHandler(c *fiber.Ctx) error {
 	}
 
 	// our query and new item
-	query := "INSERT into todos VALUES ($1)"
+	query := "INSERT into todos(item) VALUES ($1)"
 	newTodo := todo{}
 
 	// parsing the body

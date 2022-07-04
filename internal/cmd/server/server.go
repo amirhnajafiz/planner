@@ -34,7 +34,7 @@ func (s Server) New() {
 	}
 
 	// adding assets files
-	app.Static("/views", "./public")
+	app.Static("/", "./views")
 
 	// server start
 	s.Logger.Info("server started", zap.String("port", port))
