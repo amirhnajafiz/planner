@@ -57,7 +57,7 @@ func (h Handler) homePage(c *fiber.Ctx) error {
 	log.Println(len(todos))
 
 	return c.Render("index", fiber.Map{
-		"items": todos,
+		"Todos": todos,
 	})
 }
 
@@ -91,7 +91,7 @@ func (h Handler) postHandler(c *fiber.Ctx) error {
 
 func (h Handler) putHandler(c *fiber.Ctx) error {
 	// query
-	query := "UPDATE todos SET item=$1 WHERE item=$s"
+	query := "UPDATE todos SET item=$1 WHERE item=$2"
 	// items
 	oldItem := c.Query("olditem")
 	newItem := c.Query("newitem")
@@ -108,7 +108,7 @@ func (h Handler) putHandler(c *fiber.Ctx) error {
 
 func (h Handler) delHandler(c *fiber.Ctx) error {
 	// query and item
-	query := "DELETE form todos WHERE item=$1"
+	query := "DELETE FROM todos WHERE item=$1"
 	todoToDelete := c.Query("item")
 
 	// remove from database
