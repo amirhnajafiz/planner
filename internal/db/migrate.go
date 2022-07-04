@@ -1,7 +1,6 @@
 package db
 
 import (
-	"log"
 	"os"
 )
 
@@ -12,10 +11,10 @@ const (
 	DOWN = "01_migrate_down.sql"
 )
 
-func Migrate(migrate bool) {
+func Migrate(migrate bool) error {
 	conn, err := NewConnection()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	source := PATH
@@ -27,11 +26,13 @@ func Migrate(migrate bool) {
 
 	query, err := os.ReadFile(source)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	_, err = conn.Exec(string(query))
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	return nil
 }
