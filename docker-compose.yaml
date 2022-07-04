@@ -11,6 +11,7 @@ services:
     command:
       - psql -U root -d planner -a -f ./schema.sql
     volumes:
+      - ./schema.sql:/schema.sql
       - db:/var/lib/postgresql/data
 volumes:
   db:
