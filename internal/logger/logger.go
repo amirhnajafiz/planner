@@ -8,6 +8,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+// New logger
 func New() *zap.Logger {
 	var lvl zapcore.Level
 

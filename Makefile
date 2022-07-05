@@ -8,7 +8,7 @@ m-up:
 
 # migrate down
 m-down:
-	go run setup.go no-migrate
+	go run internal/cmd/setup/setup.go no-migrate
 
 # setup table
 d-start:
