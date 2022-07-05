@@ -41,14 +41,13 @@ func (h Handler) homePage(c *fiber.Ctx) error {
 
 	// executing our query
 	rows, err := h.Db.Query(selectAllQuery)
-
-	defer rows.Close()
-
 	if err != nil {
 		h.Logger.Error(debug.DatabaseError, zap.Error(err))
 
 		return errors.New(debug.DatabaseError)
 	}
+
+	defer rows.Close()
 
 	// extracting our query results
 	for rows.Next() {
