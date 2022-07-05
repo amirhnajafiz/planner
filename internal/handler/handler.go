@@ -3,7 +3,6 @@ package handler
 import (
 	"database/sql"
 	"errors"
-	"log"
 
 	"github.com/amirhnajafiz/planner/internal/debug"
 	"github.com/gofiber/fiber/v2"
@@ -15,6 +14,14 @@ type Handler struct {
 	Db     *sql.DB
 	Logger *zap.Logger
 }
+
+// postgresQL queries
+const (
+	selectAllQuery  = "SELECT item FROM todos"
+	insertItemQuery = "INSERT into todos(item) VALUES ($1)"
+	updateItemQuery = "UPDATE todos SET item=$1 WHERE item=$2"
+	deleteItemQuery = "DELETE FROM todos WHERE item=$1"
+)
 
 // Register our handler endpoints routes
 func (h Handler) Register(app *fiber.App) {
@@ -30,16 +37,12 @@ func (h Handler) homePage(c *fiber.Ctx) error {
 		// query extracting variables
 		res   string
 		todos []string
-		// index query
-		query = "SELECT item FROM todos"
 	)
 
 	// executing our query
-	rows, err := h.Db.Query(query)
+	rows, err := h.Db.Query(selectAllQuery)
 
-	defer func(rows *sql.Rows) {
-		_ = rows.Close()
-	}(rows)
+	defer rows.Close()
 
 	if err != nil {
 		h.Logger.Error(debug.DatabaseError, zap.Error(err))
@@ -50,11 +53,8 @@ func (h Handler) homePage(c *fiber.Ctx) error {
 	// extracting our query results
 	for rows.Next() {
 		_ = rows.Scan(&res)
-
 		todos = append(todos, res)
 	}
-
-	log.Println(len(todos))
 
 	return c.Render("index", fiber.Map{
 		"Todos": todos,
@@ -67,8 +67,6 @@ func (h Handler) postHandler(c *fiber.Ctx) error {
 		Item string `json:"item"`
 	}
 
-	// our query and new item
-	query := "INSERT into todos(item) VALUES ($1)"
 	newTodo := todo{}
 
 	// parsing the body
@@ -80,7 +78,7 @@ func (h Handler) postHandler(c *fiber.Ctx) error {
 
 	// save the new item
 	if newTodo.Item != "" {
-		_, err := h.Db.Exec(query, newTodo.Item)
+		_, err := h.Db.Exec(insertItemQuery, newTodo.Item)
 		if err != nil {
 			h.Logger.Error(debug.SavingError, zap.Error(err))
 		}
@@ -90,14 +88,8 @@ func (h Handler) postHandler(c *fiber.Ctx) error {
 }
 
 func (h Handler) putHandler(c *fiber.Ctx) error {
-	// query
-	query := "UPDATE todos SET item=$1 WHERE item=$2"
-	// items
-	oldItem := c.Query("olditem")
-	newItem := c.Query("newitem")
-
 	// update database
-	if _, err := h.Db.Exec(query, newItem, oldItem); err != nil {
+	if _, err := h.Db.Exec(updateItemQuery, c.Query("newitem"), c.Query("olditem")); err != nil {
 		h.Logger.Error(debug.UpdateError, zap.Error(err))
 
 		return err
@@ -107,12 +99,8 @@ func (h Handler) putHandler(c *fiber.Ctx) error {
 }
 
 func (h Handler) delHandler(c *fiber.Ctx) error {
-	// query and item
-	query := "DELETE FROM todos WHERE item=$1"
-	todoToDelete := c.Query("item")
-
 	// remove from database
-	if _, err := h.Db.Exec(query, todoToDelete); err != nil {
+	if _, err := h.Db.Exec(deleteItemQuery, c.Query("item")); err != nil {
 		h.Logger.Error(debug.DeleteError, zap.Error(err))
 
 		return err

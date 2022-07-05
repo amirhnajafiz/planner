@@ -38,6 +38,7 @@ func getKeys() map[string]string {
 	}
 }
 
+// returns the connection key for postgresQL
 func getConnectionKey() string {
 	connectionStr := "host={{host}} port={{port}} user={{user}} password={{password}} dbname={{db}} sslmode=disable"
 	keys := getKeys()
@@ -54,6 +55,7 @@ func getConnectionKey() string {
 	return connectionStr
 }
 
+// NewConnection opens a new connection to our postgresQL
 func NewConnection() (*sql.DB, error) {
 	return sql.Open(driverName, getConnectionKey())
 }

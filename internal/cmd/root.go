@@ -21,6 +21,7 @@ func Execute() {
 		os.Exit(-1)
 	}
 
+	// creating a new server
 	server.Server{
 		Db:     d,
 		Logger: l.Named("server"),

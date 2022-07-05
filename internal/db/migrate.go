@@ -11,6 +11,7 @@ const (
 	DOWN = "01_migrate_down.sql"
 )
 
+// Migrate migrates our database schema
 func Migrate(migrate bool) error {
 	conn, err := NewConnection()
 	if err != nil {
