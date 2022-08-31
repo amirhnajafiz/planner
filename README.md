@@ -1,14 +1,14 @@
-# Planner
-
-Task management with Golang and PostgresQL.
-
 <p align="center">
     <img src="assets/logo.png" width="600"  alt="logo"/>
 </p>
 
-A best practice for working with PostgresQL in Golang applications.
+<h1 align="center">
+Planner
+</h1>
 
-## How to run?
+Task management with Golang and PostgresQL. A best practice for working with PostgresQL in Golang applications.
+
+## How to run the project?
 Make sure you have **docker** and **golang** installed on your system.
 
 Clone the project:
